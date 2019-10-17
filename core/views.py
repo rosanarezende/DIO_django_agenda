@@ -9,6 +9,19 @@ from django.contrib import messages
 # def index(request):
 #     return redirect('/agenda/')
 
+# @login_required(login_url='/login/')
+# def delete_evento(request, id_evento):
+#     Evento.objects.filter(id=id_evento).delete()
+#     return redirect('/')
+
+@login_required(login_url='/login/')
+def delete_evento(request, id_evento):
+    usuario = request.user
+    evento = Evento.objects.get(id=id_evento)
+    if usuario == evento.usuario:
+        evento.delete()
+    return redirect('/')
+
 @login_required(login_url='/login/')
 def submit_evento(request):
     if request.POST:
@@ -17,16 +30,34 @@ def submit_evento(request):
         descricao = request.POST.get('descricao')
         usuario = request.user
         local_evento = request.POST.get('local_evento')
-        Evento.objects.create(titulo=titulo,
-                              data_evento=data_evento,
-                              descricao=descricao,
-                              usuario=usuario,
-                              local_evento=local_evento)
+        id_evento = request.POST.get('id_evento')
+        if id_evento:
+            # Evento.objects.filter(id=id_evento).update(titulo=titulo,
+            #                                            data_evento=data_evento,
+            #                                            descricao=descricao,
+            #                                            local_evento=local_evento)
+            evento = Evento.objects.get(id=id_evento)
+            if usuario == evento.usuario:
+                evento.titulo = titulo
+                evento.data_evento = data_evento
+                evento.descricao = descricao
+                evento.local_evento = local_evento
+                evento.save()
+        else:
+            Evento.objects.create(titulo=titulo,
+                                  data_evento=data_evento,
+                                  descricao=descricao,
+                                  usuario=usuario,
+                                  local_evento=local_evento)
     return redirect('/')
 
 @login_required(login_url='/login/')
 def evento(request):
-    return render (request, 'evento.html')
+    id_evento = request.GET.get('id')
+    dados = {}
+    if id_evento:
+        dados['evento'] = Evento.objects.get(id=id_evento)
+    return render (request, 'evento.html', dados)
 
 def logout_user(request):
     logout(request)
