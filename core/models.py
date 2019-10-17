@@ -10,6 +10,7 @@ class Evento(models.Model):
     data_criacao = models.DateTimeField(auto_now=True)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
         #se o usuário for excluído da aplicação, exclui todos os eventos dele
+    local_evento = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'evento'
@@ -19,3 +20,6 @@ class Evento(models.Model):
 
     def get_data_evento(self):
         return self.data_evento.strftime('%d/%m/%Y - %H:%M horas')
+
+    def get_local_evento(self):
+        return self.local_evento
