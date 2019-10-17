@@ -16,3 +16,6 @@ class Evento(models.Model):
 
     def __str__(self):
         return self.titulo #sempre q alguém chamar o objeto título, volta o título
+
+    def get_data_evento(self):
+        return self.data_evento.strftime('%d/%m/%Y - %H:%M horas')
